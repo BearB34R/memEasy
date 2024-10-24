@@ -9,14 +9,11 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        
         VStack{
             Text("Hello, World!")
             
+            
         }
-        
-        Color("BackgroundColor")
-            .edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
     }
 }
 
