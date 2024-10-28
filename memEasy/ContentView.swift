@@ -9,9 +9,26 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack{
-            Text("Hello, World!")
-            
+        NavigationView {
+            ZStack{
+                Color("BackgroundColor")
+                    .ignoresSafeArea()
+                VStack {
+                    Text("MemEasy")
+                        .foregroundColor(Color("MainColor"))
+                        .font(.largeTitle)
+                        .padding()
+
+                    // NavigationLink with button styling
+                    NavigationLink(destination: listOfFlashcardsView()) {
+                        Text("Go to Flashcards")
+                            .padding()
+                            .background(Color("MainColor"))
+                            .foregroundColor(Color("TextColor"))
+                            .cornerRadius(10)
+                    }
+                }
+            }
             
         }
     }
