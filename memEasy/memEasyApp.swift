@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct memEasyApp: App {
@@ -13,5 +14,7 @@ struct memEasyApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: Deck.self)
+        .modelContainer(for: Flashcards.self)
     }
 }

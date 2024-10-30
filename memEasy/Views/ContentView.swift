@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    
     var body: some View {
         NavigationView {
             ZStack{
@@ -15,7 +16,7 @@ struct ContentView: View {
                     .ignoresSafeArea()
                 VStack {
                     Text("MemEasy")
-                        .foregroundColor(Color("MainColor"))
+                        .foregroundColor(Color("TextColor"))
                         .font(.largeTitle)
                         .padding()
 
