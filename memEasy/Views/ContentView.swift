@@ -21,7 +21,7 @@ struct ContentView: View {
                         .padding()
 
                     // NavigationLink with button styling
-                    NavigationLink(destination: listOfFlashcardsView()) {
+                    NavigationLink(destination: createNewDeckView()) {
                         Text("Go to Flashcards")
                             .padding()
                             .background(Color("MainColor"))

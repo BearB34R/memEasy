@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 import SwiftData
 
 @Model
@@ -13,29 +14,29 @@ class Deck: Identifiable  {
     
     var id: UUID
     var name: String
-    var date: Date
-    var flashcards: [Flashcards]
+    var dateCreated: Date
+    var flashcards: [Flashcard]
     
-    init(name: String, date: Date, flashcards: [Flashcards] = []) {
+    init(name: String,  flashcards: [Flashcard] = []) {
         self.id = UUID()
         self.name = name
-        self.date = date
+        dateCreated = Date()
         self.flashcards = flashcards
     }
     
 }
 
 @Model
-class Flashcards: Identifiable {
+class Flashcard: Identifiable {
     
     var id: UUID
-    var name: String
+    var question: String
     var answer: String
     var deck: Deck?
     
-    init(id: UUID, name: String, answer: String, deck: Deck? = nil) {
+    init(id: UUID, question: String, answer: String, deck: Deck? = nil) {
         self.id = UUID()
-        self.name = name
+        self.question = question
         self.answer = answer
         self.deck = deck
     }

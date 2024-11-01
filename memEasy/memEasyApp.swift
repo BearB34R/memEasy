@@ -15,6 +15,6 @@ struct memEasyApp: App {
             ContentView()
         }
         .modelContainer(for: Deck.self)
-        .modelContainer(for: Flashcards.self)
+        .modelContainer(for: Flashcard.self)
     }
 }
