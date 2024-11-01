@@ -14,6 +14,7 @@
 		0F85ED5B2CC9B6C700E708BE /* memEasyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F85ED5A2CC9B6C700E708BE /* memEasyApp.swift */; };
 		0F85ED5F2CC9B6C700E708BE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0F85ED5E2CC9B6C700E708BE /* Assets.xcassets */; };
 		0F85ED622CC9B6C700E708BE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0F85ED612CC9B6C700E708BE /* Preview Assets.xcassets */; };
+		CA0F56F22CD4409B00F88789 /* pdfParsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0F56F12CD4409B00F88789 /* pdfParsing.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,7 @@
 		0F85ED5A2CC9B6C700E708BE /* memEasyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = memEasyApp.swift; sourceTree = "<group>"; };
 		0F85ED5E2CC9B6C700E708BE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0F85ED612CC9B6C700E708BE /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		CA0F56F12CD4409B00F88789 /* pdfParsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = pdfParsing.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +84,7 @@
 		0F85ED592CC9B6C700E708BE /* memEasy */ = {
 			isa = PBXGroup;
 			children = (
+				CA0F56F02CD4404500F88789 /* Logic */,
 				0F5356EF2CD2B49700CD960A /* ExtraAssets */,
 				0F5356ED2CD2B41B00CD960A /* DataModels */,
 				0F5356EC2CD2B3E300CD960A /* Views */,
@@ -98,6 +101,14 @@
 				0F85ED612CC9B6C700E708BE /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		CA0F56F02CD4404500F88789 /* Logic */ = {
+			isa = PBXGroup;
+			children = (
+				CA0F56F12CD4409B00F88789 /* pdfParsing.swift */,
+			);
+			path = Logic;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -171,6 +182,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0F5356F42CD2B51200CD960A /* listOfFlashcardsView.swift in Sources */,
+				CA0F56F22CD4409B00F88789 /* pdfParsing.swift in Sources */,
 				0F5356F72CD2B54900CD960A /* dataStorage.swift in Sources */,
 				0F5356F52CD2B51200CD960A /* createNewDeckView.swift in Sources */,
 				0F5356F32CD2B51200CD960A /* ContentView.swift in Sources */,
