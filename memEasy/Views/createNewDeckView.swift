@@ -8,41 +8,87 @@
 import SwiftUI
 import SwiftData
 
+extension View {
+    func placeholder<Content: View>(
+        when shouldShow: Bool,
+        alignment: Alignment = .leading,
+        @ViewBuilder placeholder: () -> Content) -> some View {
+        
+        ZStack(alignment: alignment) {
+            placeholder().opacity(shouldShow ? 1 : 0)
+            self
+        }
+    }
+}
+
 struct createNewDeckView: View {
     @Environment(\.modelContext) var context
     @Query var decks: [Deck]
     
-    // Add state for the new deck name
     @State private var newDeckName: String = ""
     
     var body: some View {
-        List {
-            // Input field for new deck
-            Section {
-                HStack {
-                    TextField("New Deck Name", text: $newDeckName)
-                    Button(action: addDeck) {
-                        Image(systemName: "plus.circle.fill")
-                    }
-                    .disabled(newDeckName.isEmpty)
-                }
-            }
+        ZStack {
+            Color("BackgroundColor")
+                .ignoresSafeArea()
             
-            // List of existing decks
-            Section {
-                ForEach(decks) { deck in
-                    NavigationLink(destination: listOfFlashcardsView(deck: deck)) {
-                        VStack(alignment: .leading) {
-                            Text(deck.name)
-                                .font(.headline)
-                            Text("Cards: \(deck.flashcards.count)")
-                                .font(.caption)
-                                .foregroundColor(.gray)
+            List {
+                Section {
+                    HStack {
+                        ZStack(alignment: .leading) {
+                            if newDeckName.isEmpty {
+                                Text("New Deck Name")
+                                    .foregroundColor(Color("TextColor"))
+                                    .padding(.horizontal, 8)
+                            }
+                            TextField("", text: $newDeckName)
+                                .foregroundColor(Color("TextColor"))
+                                .padding(8)
+                                .background(Color("BackgroundColor"))
+                                .cornerRadius(8)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color("MainColor"), lineWidth: 1)
+                                )
+                                .tint(Color("TextColor"))
+                                .textFieldStyle(PlainTextFieldStyle())
+                        }
+                        
+                        Button(action: addDeck) {
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundColor(Color("MainColor"))
+                        }
+                        .disabled(newDeckName.isEmpty)
+                    }
+                }
+                .listRowBackground(Color.clear)
+                
+                // List of existing decks
+                Section {
+                    ForEach(decks) { deck in
+                        NavigationLink {
+                            listOfFlashcardsView(deck: deck)
+                        } label: {
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text(deck.name)
+                                        .font(.headline)
+                                        .foregroundColor(Color("TextColor"))
+                                    Text("Cards: \(deck.flashcards.count)")
+                                        .font(.caption)
+                                        .foregroundColor(Color("CorrectColor"))
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(Color("MainColor"))
+                            }
                         }
                     }
+                    .onDelete(perform: deleteDeck)
                 }
-                .onDelete(perform: deleteDeck)
+                .listRowBackground(Color.clear)
             }
+            .scrollContentBackground(.hidden)
         }
         .navigationTitle("My Flashcards")
         .toolbarColorScheme(.dark, for: .navigationBar)

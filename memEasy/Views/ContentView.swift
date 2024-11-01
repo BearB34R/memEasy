@@ -30,7 +30,10 @@ struct ContentView: View {
                     }
                 }
             }
-            
+            .toolbarColorScheme(.dark, for: .navigationBar)
+            .toolbarBackground(Color("BackgroundColor"), for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .navigationBarTitleDisplayMode(.large)
         }
     }
 }
