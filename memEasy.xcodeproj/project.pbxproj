@@ -44,8 +44,8 @@
 			isa = PBXGroup;
 			children = (
 				0F5356F02CD2B51200CD960A /* ContentView.swift */,
-				0F5356F12CD2B51200CD960A /* listOfFlashcardsView.swift */,
 				0F5356F22CD2B51200CD960A /* createNewDeckView.swift */,
+				0F5356F12CD2B51200CD960A /* listOfFlashcardsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";

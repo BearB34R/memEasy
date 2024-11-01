@@ -16,37 +16,39 @@ struct createNewDeckView: View {
     @State private var newDeckName: String = ""
     
     var body: some View {
-        NavigationView {
-            List {
-                // Input field for new deck
-                Section {
-                    HStack {
-                        TextField("New Deck Name", text: $newDeckName)
-                        Button(action: addDeck) {
-                            Image(systemName: "plus.circle.fill")
-                        }
-                        .disabled(newDeckName.isEmpty)
+        List {
+            // Input field for new deck
+            Section {
+                HStack {
+                    TextField("New Deck Name", text: $newDeckName)
+                    Button(action: addDeck) {
+                        Image(systemName: "plus.circle.fill")
                     }
-                }
-                
-                // List of existing decks
-                Section {
-                    ForEach(decks) { deck in
-                        NavigationLink(destination: listOfFlashcardsView(deck: deck)) {
-                            VStack(alignment: .leading) {
-                                Text(deck.name)
-                                    .font(.headline)
-                                Text("Cards: \(deck.flashcards.count)")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                            }
-                        }
-                    }
-                    .onDelete(perform: deleteDeck)
+                    .disabled(newDeckName.isEmpty)
                 }
             }
-            .navigationTitle("My Flashcards")
+            
+            // List of existing decks
+            Section {
+                ForEach(decks) { deck in
+                    NavigationLink(destination: listOfFlashcardsView(deck: deck)) {
+                        VStack(alignment: .leading) {
+                            Text(deck.name)
+                                .font(.headline)
+                            Text("Cards: \(deck.flashcards.count)")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
+                    }
+                }
+                .onDelete(perform: deleteDeck)
+            }
         }
+        .navigationTitle("My Flashcards")
+        .toolbarColorScheme(.dark, for: .navigationBar)
+        .toolbarBackground(Color("BackgroundColor"), for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .navigationBarTitleDisplayMode(.large)
     }
     
     func addDeck() {

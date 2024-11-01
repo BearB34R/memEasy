@@ -18,57 +18,112 @@ struct listOfFlashcardsView: View {
     @State private var showingFilePicker = false
     
     var body: some View {
-        List {
-            // PDF Import section
-            Section {
-                Button(action: { showingFilePicker = true }) {
-                    Label("Import from PDF", systemImage: "doc.fill")
-                }
-            }
+        ZStack {
+            // Add background color
+            Color("BackgroundColor")
+                .ignoresSafeArea()
             
-            // Add new flashcard section
-            Section {
-                Button(action: { isAddingCard.toggle() }) {
-                    Label("Add New Flashcard", systemImage: "plus.circle")
-                }
-                
-                if isAddingCard {
-                    VStack(spacing: 10) {
-                        TextField("Question", text: $newQuestion)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                        TextField("Answer", text: $newAnswer)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
+            List {
+                // Top buttons section
+                Section {
+                    HStack(spacing: 10) {
+                        // PDF Import button
+                        Label("Import PDF", systemImage: "doc.fill")
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                            .background(Color("MainColor"))
+                            .foregroundColor(Color("TextColor"))
+                            .cornerRadius(8)
+                            .onTapGesture {
+                                showingFilePicker = true
+                            }
                         
-                        Button(action: addFlashcard) {
-                            Text("Save Flashcard")
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 8)
-                                .background(Color("MainColor"))
+                        // Add New Flashcard button
+                        Label("Add Card", systemImage: "plus.circle")
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                            .background(Color("MainColor"))
+                            .foregroundColor(Color("TextColor"))
+                            .cornerRadius(8)
+                            .onTapGesture {
+                                isAddingCard.toggle()
+                            }
+                    }
+                    
+                    if isAddingCard {
+                        VStack(spacing: 10) {
+                            // Question TextEditor
+                            Text("Question:")
                                 .foregroundColor(Color("TextColor"))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            TextEditor(text: $newQuestion)
+                                .frame(minHeight: 60)
+                                .foregroundColor(Color("TextColor"))
+                                .scrollContentBackground(.hidden)
+                                .background(Color("BackgroundColor"))
                                 .cornerRadius(8)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color("MainColor"), lineWidth: 1)
+                                )
+                            
+                            // Answer TextEditor
+                            Text("Answer:")
+                                .foregroundColor(Color("TextColor"))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            TextEditor(text: $newAnswer)
+                                .frame(minHeight: 60)
+                                .foregroundColor(Color("CorrectColor"))
+                                .scrollContentBackground(.hidden)
+                                .background(Color("BackgroundColor"))
+                                .cornerRadius(8)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color("MainColor"), lineWidth: 1)
+                                )
+                            
+                            Button(action: addFlashcard) {
+                                Text("Save Flashcard")
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 8)
+                                    .background(Color("MainColor"))
+                                    .foregroundColor(Color("TextColor"))
+                                    .cornerRadius(8)
+                            }
+                            .disabled(newQuestion.isEmpty || newAnswer.isEmpty)
                         }
-                        .disabled(newQuestion.isEmpty || newAnswer.isEmpty)
+                        .padding(.vertical, 8)
                     }
-                    .padding(.vertical, 8)
                 }
-            }
-            
-            // List of existing flashcards
-            Section("Flashcards") {
-                ForEach(deck.flashcards) { card in
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Q: \(card.question)")
-                            .font(.headline)
-                        Text("A: \(card.answer)")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
+                .listRowBackground(Color.clear)
+                
+                // List of existing flashcards
+                Section(header: 
+                    Text("Flashcards")
+                        .foregroundColor(Color("TextColor"))
+                ) {
+                    ForEach(deck.flashcards) { card in
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Q: \(card.question)")
+                                .font(.headline)
+                                .foregroundColor(Color("TextColor"))
+                            Text("A: \(card.answer)")
+                                .font(.subheadline)
+                                .foregroundColor(Color("CorrectColor"))
+                        }
+                        .padding(.vertical, 4)
                     }
-                    .padding(.vertical, 4)
+                    .onDelete(perform: deleteFlashcard)
                 }
-                .onDelete(perform: deleteFlashcard)
+                .listRowBackground(Color.clear)
             }
+            .scrollContentBackground(.hidden) // This hides the default List background
         }
         .navigationTitle(deck.name)
+        .toolbarColorScheme(.dark, for: .navigationBar)
+        .toolbarBackground(Color("BackgroundColor"), for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .navigationBarTitleDisplayMode(.large)
         .fileImporter(
             isPresented: $showingFilePicker,
             allowedContentTypes: [.pdf]
