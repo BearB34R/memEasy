@@ -52,6 +52,12 @@ struct createNewDeckView: View {
                                 )
                                 .tint(Color("TextColor"))
                                 .textFieldStyle(PlainTextFieldStyle())
+                                .onSubmit {
+                                    if !newDeckName.isEmpty {
+                                        addDeck()
+                                    }
+                                }
+                                .submitLabel(.done)
                         }
                         
                         Button(action: addDeck) {
@@ -76,7 +82,7 @@ struct createNewDeckView: View {
                                         .foregroundColor(Color("TextColor"))
                                     Text("Cards: \(deck.flashcards.count)")
                                         .font(.caption)
-                                        .foregroundColor(Color("CorrectColor"))
+                                        .foregroundColor(Color("MainColor"))
                                 }
                                 Spacer()
                                 Image(systemName: "chevron.right")
