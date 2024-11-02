@@ -19,14 +19,27 @@ struct ContentView: View {
                         .foregroundColor(Color("TextColor"))
                         .font(.largeTitle)
                         .padding()
-
-                    // NavigationLink with button styling
-                    NavigationLink(destination: createNewDeckView()) {
-                        Text("Go to Flashcards")
-                            .padding()
-                            .background(Color("MainColor"))
-                            .foregroundColor(Color("TextColor"))
-                            .cornerRadius(10)
+                    
+                    VStack(spacing: 20) {
+                        NavigationLink(destination: studyFlashcardsView()) {
+                            Text("Study")
+                                .font(.headline.bold())
+                                .frame(width: 200)
+                                .padding()
+                                .background(Color("MainColor"))
+                                .foregroundColor(Color("TextColor"))
+                                .cornerRadius(10)
+                        }
+                        
+                        NavigationLink(destination: createNewDeckView()) {
+                            Text("Flashcards")
+                                .font(.headline.bold())
+                                .frame(width: 200)
+                                .padding()
+                                .background(Color("MainColor"))
+                                .foregroundColor(Color("TextColor"))
+                                .cornerRadius(10)
+                        }
                     }
                 }
             }
