@@ -8,12 +8,27 @@
 import SwiftUI
 
 struct ContentView: View {
+    init() {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.shadowColor = .clear
+        appearance.shadowImage = UIImage()
+        appearance.backgroundColor = .clear
+        
+        // Apply to all navigation bar styles
+        UINavigationBar.appearance().standardAppearance = appearance
+        UINavigationBar.appearance().scrollEdgeAppearance = appearance
+        UINavigationBar.appearance().compactAppearance = appearance
+        
+        // Make the navigation bar transparent
+        UINavigationBar.appearance().isTranslucent = true
+    }
     
     var body: some View {
         NavigationView {
-            ZStack{
+            ZStack {
                 Color("BackgroundColor")
-                    .ignoresSafeArea()
+                    .ignoresSafeArea(.all, edges: .all)
                 VStack {
                     Text("MemEasy")
                         .foregroundColor(Color("TextColor"))
@@ -43,11 +58,15 @@ struct ContentView: View {
                     }
                 }
             }
-            .toolbarColorScheme(.dark, for: .navigationBar)
-            .toolbarBackground(Color("BackgroundColor"), for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    EmptyView()
+                }
+            }
         }
+        .navigationViewStyle(.stack)
+        .configureNavigationBar()
     }
 }
 

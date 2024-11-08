@@ -16,6 +16,7 @@ struct listOfFlashcardsView: View {
     @State private var newAnswer: String = ""
     @State private var isAddingCard: Bool = false
     @State private var showingFilePicker = false
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         ZStack {
@@ -120,10 +121,20 @@ struct listOfFlashcardsView: View {
             .scrollContentBackground(.hidden) // This hides the default List background
         }
         .navigationTitle(deck.name)
-        .toolbarColorScheme(.dark, for: .navigationBar)
-        .toolbarBackground(Color("BackgroundColor"), for: .navigationBar)
-        .toolbarBackground(.visible, for: .navigationBar)
         .navigationBarTitleDisplayMode(.large)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: { dismiss() }) {
+                    HStack {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(Color("MainColor"))
+                        Text("Back")
+                            .foregroundColor(Color("MainColor"))
+                    }
+                }
+            }
+        }
         .fileImporter(
             isPresented: $showingFilePicker,
             allowedContentTypes: [.pdf]

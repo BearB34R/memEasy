@@ -8,70 +8,83 @@
 import SwiftUI
 import SwiftData
 
-extension View {
-    func placeholder<Content: View>(
-        when shouldShow: Bool,
-        alignment: Alignment = .leading,
-        @ViewBuilder placeholder: () -> Content) -> some View {
-        
-        ZStack(alignment: alignment) {
-            placeholder().opacity(shouldShow ? 1 : 0)
-            self
-        }
-    }
-}
-
 struct createNewDeckView: View {
     @Environment(\.modelContext) var context
-    @Query var decks: [Deck]
+    @Query(sort: \Deck.dateCreated, order: .reverse) var decks: [Deck]
+    @Environment(\.dismiss) private var dismiss
     
-    @State private var newDeckName: String = ""
+    @State private var searchText: String = ""
+    @State private var showTopElements = true
+    @State private var scrollOffset: CGFloat = 0
+    @State private var sortByAlphabet = false
+    @FocusState private var isSearchFocused: Bool
+    
+    var sortedAndFilteredDecks: [Deck] {
+        let filtered = searchText.isEmpty ? decks : decks.filter { 
+            $0.name.localizedCaseInsensitiveContains(searchText)
+        }
+        
+        if sortByAlphabet {
+            return filtered.sorted { $0.name.lowercased() < $1.name.lowercased() }
+        }
+        return filtered
+    }
     
     var body: some View {
         ZStack {
             Color("BackgroundColor")
                 .ignoresSafeArea()
+                .onTapGesture {
+                    isSearchFocused = false
+                }
             
-            List {
-                Section {
+            VStack(spacing: 0) {
+                if showTopElements {
                     HStack {
-                        ZStack(alignment: .leading) {
-                            if newDeckName.isEmpty {
-                                Text("New Deck Name")
-                                    .foregroundColor(Color("TextColor"))
-                                    .padding(.horizontal, 8)
-                            }
-                            TextField("", text: $newDeckName)
+                        HStack {
+                            Image(systemName: "magnifyingglass")
                                 .foregroundColor(Color("TextColor"))
-                                .padding(8)
-                                .background(Color("BackgroundColor"))
-                                .cornerRadius(8)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color("MainColor"), lineWidth: 1)
-                                )
+                            
+                            TextField("Search or Create New Deck", text: $searchText)
+                                .foregroundColor(Color("TextColor"))
                                 .tint(Color("TextColor"))
                                 .textFieldStyle(PlainTextFieldStyle())
+                                .focused($isSearchFocused)
                                 .onSubmit {
-                                    if !newDeckName.isEmpty {
+                                    if !searchText.isEmpty && sortedAndFilteredDecks.isEmpty {
                                         addDeck()
                                     }
+                                    isSearchFocused = false
                                 }
                                 .submitLabel(.done)
+                                .foregroundStyle(Color("TextColor"))
                         }
+                        .padding(8)
+                        .background(Color("BackgroundColor"))
+                        .cornerRadius(8)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color("MainColor"), lineWidth: 1)
+                        )
                         
-                        Button(action: addDeck) {
-                            Image(systemName: "plus.circle.fill")
-                                .foregroundColor(Color("MainColor"))
+                        if !searchText.isEmpty {
+                            Button(action: {
+                                if sortedAndFilteredDecks.isEmpty {
+                                    addDeck()
+                                }
+                                searchText = ""
+                                isSearchFocused = false
+                            }) {
+                                Image(systemName: sortedAndFilteredDecks.isEmpty ? "plus.circle.fill" : "xmark.circle.fill")
+                                    .foregroundColor(Color("MainColor"))
+                            }
                         }
-                        .disabled(newDeckName.isEmpty)
                     }
+                    .padding()
                 }
-                .listRowBackground(Color.clear)
                 
-                // List of existing decks
-                Section {
-                    ForEach(decks) { deck in
+                List {
+                    ForEach(sortedAndFilteredDecks) { deck in
                         NavigationLink {
                             listOfFlashcardsView(deck: deck)
                         } label: {
@@ -89,29 +102,59 @@ struct createNewDeckView: View {
                                     .foregroundColor(Color("MainColor"))
                             }
                         }
+                        .listRowBackground(Color("BackgroundColor"))
                     }
                     .onDelete(perform: deleteDeck)
                 }
-                .listRowBackground(Color.clear)
+                .listStyle(PlainListStyle())
+                .scrollContentBackground(.hidden)
+                .background(Color("BackgroundColor"))
+                .onChange(of: scrollOffset) { oldValue, newValue in
+                    withAnimation {
+                        showTopElements = scrollOffset >= -10
+                    }
+                }
             }
-            .scrollContentBackground(.hidden)
         }
         .navigationTitle("My Flashcards")
-        .toolbarColorScheme(.dark, for: .navigationBar)
-        .toolbarBackground(Color("BackgroundColor"), for: .navigationBar)
-        .toolbarBackground(.visible, for: .navigationBar)
         .navigationBarTitleDisplayMode(.large)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                if showTopElements {
+                    Button(action: { dismiss() }) {
+                        HStack {
+                            Image(systemName: "chevron.left")
+                                .foregroundColor(Color("MainColor"))
+                            Text("Back")
+                                .foregroundColor(Color("MainColor"))
+                        }
+                    }
+                }
+            }
+            
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    withAnimation {
+                        sortByAlphabet.toggle()
+                    }
+                }) {
+                    Image(systemName: sortByAlphabet ? "textformat.abc" : "calendar")
+                        .foregroundColor(Color("MainColor"))
+                }
+            }
+        }
     }
     
     func addDeck() {
-        let deck = Deck(name: newDeckName)
+        let deck = Deck(name: searchText)
         context.insert(deck)
-        newDeckName = "" // Reset the text field
+        searchText = ""
     }
     
     func deleteDeck(at offsets: IndexSet) {
         for index in offsets {
-            context.delete(decks[index])
+            context.delete(sortedAndFilteredDecks[index])
         }
     }
 }
