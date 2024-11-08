@@ -6,16 +6,37 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct studyFlashcardsView: View {
     @Environment(\.dismiss) private var dismiss
+    @Query(sort: \Deck.dateCreated, order: .reverse) var decks: [Deck]
     
     var body: some View {
         ZStack {
             Color("BackgroundColor")
                 .ignoresSafeArea()
             
-            // ... rest of your view content ...
+            List {
+                ForEach(decks) { deck in
+                    NavigationLink {
+                        flashcardView(deck: deck)
+                    } label: {
+                        VStack(alignment: .leading) {
+                            Text(deck.name)
+                                .font(.headline)
+                                .foregroundColor(Color("TextColor"))
+                            Text("Cards: \(deck.flashcards.count)")
+                                .font(.caption)
+                                .foregroundColor(Color("MainColor"))
+                        }
+                        .padding(.vertical, 4)
+                    }
+                    .listRowBackground(Color("BackgroundColor"))
+                }
+            }
+            .listStyle(PlainListStyle())
+            .scrollContentBackground(.hidden)
         }
         .navigationTitle("Study")
         .navigationBarTitleDisplayMode(.large)

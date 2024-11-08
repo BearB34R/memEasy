@@ -16,6 +16,7 @@
 		0F85ED5F2CC9B6C700E708BE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0F85ED5E2CC9B6C700E708BE /* Assets.xcassets */; };
 		0F85ED622CC9B6C700E708BE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0F85ED612CC9B6C700E708BE /* Preview Assets.xcassets */; };
 		0FD199F02CDDC1CF0017A9BE /* NavigationBarModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FD199EF2CDDC1CF0017A9BE /* NavigationBarModifier.swift */; };
+		0FD199F42CDDD4340017A9BE /* flashcardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FD199F32CDDD4340017A9BE /* flashcardView.swift */; };
 		CA0F56F22CD4409B00F88789 /* pdfParsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0F56F12CD4409B00F88789 /* pdfParsing.swift */; };
 /* End PBXBuildFile section */
 
@@ -30,6 +31,7 @@
 		0F85ED5E2CC9B6C700E708BE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0F85ED612CC9B6C700E708BE /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		0FD199EF2CDDC1CF0017A9BE /* NavigationBarModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarModifier.swift; sourceTree = "<group>"; };
+		0FD199F32CDDD4340017A9BE /* flashcardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = flashcardView.swift; sourceTree = "<group>"; };
 		CA0F56F12CD4409B00F88789 /* pdfParsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = pdfParsing.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -51,6 +53,7 @@
 				0F5356F22CD2B51200CD960A /* createNewDeckView.swift */,
 				0F5356F12CD2B51200CD960A /* listOfFlashcardsView.swift */,
 				0F5356F82CD6901700CD960A /* studyFlashcardsView.swift */,
+				0FD199F32CDDD4340017A9BE /* flashcardView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -200,6 +203,7 @@
 				0FD199F02CDDC1CF0017A9BE /* NavigationBarModifier.swift in Sources */,
 				0F5356F72CD2B54900CD960A /* dataStorage.swift in Sources */,
 				0F5356F52CD2B51200CD960A /* createNewDeckView.swift in Sources */,
+				0FD199F42CDDD4340017A9BE /* flashcardView.swift in Sources */,
 				0F5356F32CD2B51200CD960A /* ContentView.swift in Sources */,
 				0F85ED5B2CC9B6C700E708BE /* memEasyApp.swift in Sources */,
 				0F5356F92CD6901700CD960A /* studyFlashcardsView.swift in Sources */,

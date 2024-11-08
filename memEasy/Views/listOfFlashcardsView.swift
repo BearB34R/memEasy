@@ -149,7 +149,7 @@ struct listOfFlashcardsView: View {
     }
     
     private func addFlashcard() {
-        let flashcard = Flashcard(id: UUID(), question: newQuestion, answer: newAnswer, deck: deck)
+        let flashcard = Flashcard(question: newQuestion, answer: newAnswer, deck: deck)
         deck.flashcards.append(flashcard)
         
         // Reset input fields
@@ -177,7 +177,6 @@ struct listOfFlashcardsView: View {
         // Create flashcards from the parsed Q&A pairs
         for pair in qaPairs {
             let flashcard = Flashcard(
-                id: UUID(),
                 question: pair.question,
                 answer: pair.answer,
                 deck: deck

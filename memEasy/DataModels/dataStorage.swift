@@ -34,7 +34,7 @@ class Flashcard: Identifiable {
     var answer: String
     var deck: Deck?
     
-    init(id: UUID, question: String, answer: String, deck: Deck? = nil) {
+    init(question: String, answer: String, deck: Deck? = nil) {
         self.id = UUID()
         self.question = question
         self.answer = answer
