@@ -21,16 +21,14 @@ func loadPDFText(url: URL) -> String? {
     return fullText
 }
 
-
 func parseQuestionsAndAnswers(text: String) -> [(question: String, answer: String)] {
-    
-    // "Q: What is ...?"
-    // "A: The answer is ..."
     let questionAnswerPattern = #"Q:\s*(.+?)\nA:\s*(.+?)(?=\nQ:|\n?$)"#
     let regex = try? NSRegularExpression(pattern: questionAnswerPattern, options: [.dotMatchesLineSeparators])
     
     var flashcards = [(question: String, answer: String)]()
     let matches = regex?.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
+    
+    print("Matches found: \(matches?.count ?? 0)")
     
     matches?.forEach { match in
         if let questionRange = Range(match.range(at: 1), in: text),
@@ -38,6 +36,7 @@ func parseQuestionsAndAnswers(text: String) -> [(question: String, answer: Strin
             let question = String(text[questionRange])
             let answer = String(text[answerRange])
             flashcards.append((question: question, answer: answer))
+            print("Parsed Flashcard - Question: \(question), Answer: \(answer)")
         }
     }
     

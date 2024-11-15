@@ -11,7 +11,7 @@ import SwiftData
 struct flashcardView: View {
     let deck: Deck
     @State private var currentIndex = 0
-    @State private var offset: CGFloat = 0
+    @State private var offset: CGSize = .zero
     @State private var isFlipped = false
     @State private var degree: Double = 0
     @State private var backgroundColor: Color = Color("BackgroundColor")
@@ -39,19 +39,20 @@ struct flashcardView: View {
                             .rotation3DEffect(.degrees(degree), axis: (x: 0, y: 1, z: 0))
                             .opacity(isFlipped ? 1 : 0)
                             .scaleEffect(x: isFlipped ? -1 : 1, y: 1)
+                            .offset(offset)
                         
                         // Front of card (Question)
                         CardFace(text: currentCards[currentIndex].question, backgroundColor: backgroundColor)
                             .rotation3DEffect(.degrees(degree - 180), axis: (x: 0, y: 1, z: 0))
                             .opacity(isFlipped ? 0 : 1)
                             .scaleEffect(x: isFlipped ? 1 : -1, y: 1)
+                            .offset(offset)
                     }
                     .frame(width: 320, height: 400)
-                    .offset(x: offset)
                     .gesture(
                         DragGesture()
                             .onChanged { gesture in
-                                offset = gesture.translation.width
+                                offset = gesture.translation
                                 if gesture.translation.width > 0 {
                                     let progress = gesture.translation.width / 300
                                     let opacity = pow(progress, 2)
@@ -66,17 +67,20 @@ struct flashcardView: View {
                             }
                             .onEnded { gesture in
                                 withAnimation {
+                                    // Check if the card was dragged far enough to trigger the next card
                                     if gesture.translation.width > 100 {
-                                        offset = 500
                                         backgroundColor = Color("CorrectColor")
+                                        // Animate off-screen to the right
+                                        offset = CGSize(width: 500, height: 0)
                                         nextCard()
                                     } else if gesture.translation.width < -100 {
-                                        offset = -500
                                         backgroundColor = Color("IncorrectColor")
+                                        // Animate off-screen to the left
+                                        offset = CGSize(width: -500, height: 0)
                                         nextCard()
                                     } else {
-                                        offset = 0
-                                        backgroundColor = Color("BackgroundColor")
+                                        // Reset offset to center if not swiped far enough
+                                        offset = .zero
                                     }
                                 }
                             }
@@ -156,7 +160,7 @@ struct flashcardView: View {
     
     private func nextCard() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            if offset < 0 {
+            if offset.width < 0 {
                 if isStudyingIncorrect {
                     currentIncorrectCards.append(currentCards[currentIndex])
                 } else {
@@ -165,7 +169,7 @@ struct flashcardView: View {
             }
             
             currentIndex += 1
-            offset = 0
+            offset = .zero // Reset offset when moving to the next card
             isFlipped = false
             degree = 0
             backgroundColor = Color("BackgroundColor")

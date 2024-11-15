@@ -172,6 +172,8 @@ struct listOfFlashcardsView: View {
             return
         }
         
+        print("PDF Text Loaded: \(pdfText)") // Check the loaded text
+        
         let qaPairs = parseQuestionsAndAnswers(text: pdfText)
         
         // Create flashcards from the parsed Q&A pairs
@@ -183,6 +185,8 @@ struct listOfFlashcardsView: View {
             )
             deck.flashcards.append(flashcard)
         }
+        
+        print("Parsed Flashcards: \(qaPairs)") // Check parsed Q&A pairs
     }
 }
 #Preview {

@@ -17,6 +17,7 @@
 		0F85ED622CC9B6C700E708BE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0F85ED612CC9B6C700E708BE /* Preview Assets.xcassets */; };
 		0FD199F02CDDC1CF0017A9BE /* NavigationBarModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FD199EF2CDDC1CF0017A9BE /* NavigationBarModifier.swift */; };
 		0FD199F42CDDD4340017A9BE /* flashcardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FD199F32CDDD4340017A9BE /* flashcardView.swift */; };
+		0FFB1A7F2CE70232000ACD42 /* Flashcardpdf.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 0FFB1A7E2CE70232000ACD42 /* Flashcardpdf.pdf */; };
 		CA0F56F22CD4409B00F88789 /* pdfParsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA0F56F12CD4409B00F88789 /* pdfParsing.swift */; };
 /* End PBXBuildFile section */
 
@@ -32,6 +33,7 @@
 		0F85ED612CC9B6C700E708BE /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		0FD199EF2CDDC1CF0017A9BE /* NavigationBarModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarModifier.swift; sourceTree = "<group>"; };
 		0FD199F32CDDD4340017A9BE /* flashcardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = flashcardView.swift; sourceTree = "<group>"; };
+		0FFB1A7E2CE70232000ACD42 /* Flashcardpdf.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = Flashcardpdf.pdf; sourceTree = "<group>"; };
 		CA0F56F12CD4409B00F88789 /* pdfParsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = pdfParsing.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -92,6 +94,7 @@
 		0F85ED592CC9B6C700E708BE /* memEasy */ = {
 			isa = PBXGroup;
 			children = (
+				0FFB1A7E2CE70232000ACD42 /* Flashcardpdf.pdf */,
 				0FD199EC2CDDC13E0017A9BE /* Helpers */,
 				CA0F56F02CD4404500F88789 /* Logic */,
 				0F5356EF2CD2B49700CD960A /* ExtraAssets */,
@@ -187,6 +190,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0F85ED622CC9B6C700E708BE /* Preview Assets.xcassets in Resources */,
+				0FFB1A7F2CE70232000ACD42 /* Flashcardpdf.pdf in Resources */,
 				0F85ED5F2CC9B6C700E708BE /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -340,6 +344,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"memEasy/Preview Content\"";
+				DEVELOPMENT_TEAM = Q9MQDM272C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -368,6 +373,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"memEasy/Preview Content\"";
+				DEVELOPMENT_TEAM = Q9MQDM272C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
