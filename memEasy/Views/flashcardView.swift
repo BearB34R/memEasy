@@ -15,26 +15,33 @@ struct flashcardView: View {
     @State private var isFlipped = false
     @State private var degree: Double = 0
     @State private var backgroundColor: Color = Color("BackgroundColor")
+    @State private var incorrectCards: [Flashcard] = []
+    @State private var isStudyingIncorrect = false
+    @State private var currentIncorrectCards: [Flashcard] = []
+    
+    var currentCards: [Flashcard] {
+        isStudyingIncorrect ? incorrectCards : deck.flashcards
+    }
     
     var body: some View {
         ZStack {
             Color("BackgroundColor")
                 .ignoresSafeArea()
             
-            if currentIndex < deck.flashcards.count {
+            if currentIndex < currentCards.count {
                 // Card View
                 VStack {
                     Spacer()
                     
                     ZStack {
                         // Back of card (Answer)
-                        CardFace(text: deck.flashcards[currentIndex].answer, backgroundColor: backgroundColor)
+                        CardFace(text: currentCards[currentIndex].answer, backgroundColor: backgroundColor)
                             .rotation3DEffect(.degrees(degree), axis: (x: 0, y: 1, z: 0))
                             .opacity(isFlipped ? 1 : 0)
                             .scaleEffect(x: isFlipped ? -1 : 1, y: 1)
                         
                         // Front of card (Question)
-                        CardFace(text: deck.flashcards[currentIndex].question, backgroundColor: backgroundColor)
+                        CardFace(text: currentCards[currentIndex].question, backgroundColor: backgroundColor)
                             .rotation3DEffect(.degrees(degree - 180), axis: (x: 0, y: 1, z: 0))
                             .opacity(isFlipped ? 0 : 1)
                             .scaleEffect(x: isFlipped ? 1 : -1, y: 1)
@@ -84,20 +91,60 @@ struct flashcardView: View {
                     Spacer()
                     
                     // Progress indicator
-                    Text("\(currentIndex + 1) of \(deck.flashcards.count)")
+                    Text("\(currentIndex + 1) of \(currentCards.count)")
                         .foregroundColor(Color("TextColor"))
                         .padding(.bottom)
                 }
             } else {
-                // Deck completed view
+                // Modified deck completed view
                 VStack {
                     Text("Deck Completed!")
                         .font(.title)
                         .foregroundColor(Color("TextColor"))
+                    
+                    if !isStudyingIncorrect && !incorrectCards.isEmpty {
+                        Text("You got \(incorrectCards.count) cards incorrect")
+                            .foregroundColor(Color("TextColor"))
+                            .padding(.vertical)
+                        
+                        Button("Study Incorrect Cards") {
+                            isStudyingIncorrect = true
+                            currentIndex = 0
+                            isFlipped = false
+                            degree = 0
+                            currentIncorrectCards = []
+                        }
+                        .foregroundColor(Color("MainColor"))
+                        .padding()
+                    } else if isStudyingIncorrect {
+                        if currentIncorrectCards.isEmpty {
+                            Text("Great job! You got all cards correct this time!")
+                                .foregroundColor(Color("TextColor"))
+                                .padding(.vertical)
+                        } else {
+                            Text("You still got \(currentIncorrectCards.count) cards incorrect")
+                                .foregroundColor(Color("TextColor"))
+                                .padding(.vertical)
+                            
+                            Button("Study Incorrect Cards Again") {
+                                incorrectCards = currentIncorrectCards
+                                currentIndex = 0
+                                isFlipped = false
+                                degree = 0
+                                currentIncorrectCards = []
+                            }
+                            .foregroundColor(Color("MainColor"))
+                            .padding()
+                        }
+                    }
+                    
                     Button("Start Over") {
                         currentIndex = 0
                         isFlipped = false
                         degree = 0
+                        incorrectCards = []
+                        currentIncorrectCards = []
+                        isStudyingIncorrect = false
                     }
                     .foregroundColor(Color("MainColor"))
                     .padding()
@@ -109,6 +156,14 @@ struct flashcardView: View {
     
     private func nextCard() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            if offset < 0 {
+                if isStudyingIncorrect {
+                    currentIncorrectCards.append(currentCards[currentIndex])
+                } else {
+                    incorrectCards.append(currentCards[currentIndex])
+                }
+            }
+            
             currentIndex += 1
             offset = 0
             isFlipped = false
