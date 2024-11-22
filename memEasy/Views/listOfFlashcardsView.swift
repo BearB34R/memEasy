@@ -18,39 +18,46 @@ struct listOfFlashcardsView: View {
     @State private var showingFilePicker = false
     @Environment(\.dismiss) private var dismiss
     
+    // Add these new state variables
+    @State private var editingCard: Flashcard?
+    @State private var editQuestion: String = ""
+    @State private var editAnswer: String = ""
+    
     var body: some View {
         ZStack {
             // Add background color
             Color("BackgroundColor")
                 .ignoresSafeArea()
             
-            List {
-                // Top buttons section
-                Section {
-                    HStack(spacing: 10) {
-                        // PDF Import button
-                        Label("Import PDF", systemImage: "doc.fill")
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 8)
-                            .background(Color("MainColor"))
-                            .foregroundColor(Color("TextColor"))
-                            .cornerRadius(8)
-                            .onTapGesture {
-                                showingFilePicker = true
-                            }
-                        
-                        // Add New Flashcard button
-                        Label("Add Card", systemImage: "plus.circle")
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 8)
-                            .background(Color("MainColor"))
-                            .foregroundColor(Color("TextColor"))
-                            .cornerRadius(8)
-                            .onTapGesture {
-                                isAddingCard.toggle()
-                            }
-                    }
+            VStack(spacing: 0) {
+                // Fixed buttons section
+                HStack(spacing: 10) {
+                    // PDF Import button
+                    Label("Import PDF", systemImage: "doc.fill")
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(Color("MainColor"))
+                        .foregroundColor(Color("TextColor"))
+                        .cornerRadius(8)
+                        .onTapGesture {
+                            showingFilePicker = true
+                        }
                     
+                    // Add New Flashcard button
+                    Label("Add Card", systemImage: "plus.circle")
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(Color("MainColor"))
+                        .foregroundColor(Color("TextColor"))
+                        .cornerRadius(8)
+                        .onTapGesture {
+                            isAddingCard.toggle()
+                        }
+                }
+                .padding()
+                
+                // Scrollable content
+                List {
                     if isAddingCard {
                         VStack(spacing: 10) {
                             // Question TextEditor
@@ -94,48 +101,116 @@ struct listOfFlashcardsView: View {
                             .disabled(newQuestion.isEmpty || newAnswer.isEmpty)
                         }
                         .padding(.vertical, 8)
+                        .listRowBackground(Color.clear) // Add this line
                     }
-                }
-                .listRowBackground(Color.clear)
-                
-                // List of existing flashcards
-                Section(header: 
-                    Text("Flashcards")
-                        .foregroundColor(Color("TextColor"))
-                ) {
-                    ForEach(deck.flashcards) { card in
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Q: \(card.question)")
-                                .font(.headline)
-                                .foregroundColor(Color("TextColor"))
-                            Text("A: \(card.answer)")
-                                .font(.subheadline)
-                                .foregroundColor(Color("CorrectColor"))
+                    
+                    // List of existing flashcards
+                    Section(header: 
+                        Text("Flashcards")
+                            .foregroundColor(Color("TextColor"))
+                    ) {
+                        ForEach(deck.flashcards) { card in
+                            VStack(alignment: .leading, spacing: 8) {
+                                if editingCard?.id == card.id {
+                                    // Edit form
+                                    VStack(spacing: 10) {
+                                        Text("Question:")
+                                            .foregroundColor(Color("TextColor"))
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                        TextEditor(text: $editQuestion)
+                                            .frame(minHeight: 60)
+                                            .foregroundColor(Color("TextColor"))
+                                            .scrollContentBackground(.hidden)
+                                            .background(Color("BackgroundColor"))
+                                            .cornerRadius(8)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 8)
+                                                    .stroke(Color("MainColor"), lineWidth: 1)
+                                            )
+                                        
+                                        Text("Answer:")
+                                            .foregroundColor(Color("TextColor"))
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                        TextEditor(text: $editAnswer)
+                                            .frame(minHeight: 60)
+                                            .foregroundColor(Color("CorrectColor"))
+                                            .scrollContentBackground(.hidden)
+                                            .background(Color("BackgroundColor"))
+                                            .cornerRadius(8)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 8)
+                                                    .stroke(Color("MainColor"), lineWidth: 1)
+                                            )
+                                        
+                                        HStack {
+                                            Button(action: updateFlashcard) {
+                                                Text("Save")
+                                                    .frame(maxWidth: .infinity)
+                                                    .padding(.vertical, 8)
+                                                    .background(Color("MainColor"))
+                                                    .foregroundColor(Color("TextColor"))
+                                                    .cornerRadius(8)
+                                            }
+                                            .disabled(editQuestion.isEmpty || editAnswer.isEmpty)
+                                            
+                                            Button(action: cancelEdit) {
+                                                Text("Cancel")
+                                                    .frame(maxWidth: .infinity)
+                                                    .padding(.vertical, 8)
+                                                    .background(Color("BackgroundColor"))
+                                                    .foregroundColor(Color("MainColor"))
+                                                    .cornerRadius(8)
+                                                    .overlay(
+                                                        RoundedRectangle(cornerRadius: 8)
+                                                            .stroke(Color("MainColor"), lineWidth: 1)
+                                                    )
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    // Regular card view
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("Q: \(card.question)")
+                                            .font(.headline)
+                                            .foregroundColor(Color("TextColor"))
+                                        Text("A: \(card.answer)")
+                                            .font(.subheadline)
+                                            .foregroundColor(Color("CorrectColor"))
+                                    }
+                                    .contentShape(Rectangle()) // Make entire area tappable
+                                    .onTapGesture {
+                                        editingCard = card
+                                        editQuestion = card.question
+                                        editAnswer = card.answer
+                                    }
+                                }
+                            }
+                            .padding(.vertical, 4)
                         }
-                        .padding(.vertical, 4)
+                        .onDelete(perform: deleteFlashcard)
                     }
-                    .onDelete(perform: deleteFlashcard)
+                    .listRowBackground(Color.clear)
                 }
-                .listRowBackground(Color.clear)
+                .scrollContentBackground(.hidden) // This hides the default List background
             }
-            .scrollContentBackground(.hidden) // This hides the default List background
         }
-        .navigationTitle(deck.name)
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarTitleDisplayMode(.inline) // Changes to inline to remove large title
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: { dismiss() }) {
-                    HStack {
-                        Image(systemName: "chevron.left")
-                            .foregroundColor(Color("MainColor"))
-                        Text("Back")
-                            .foregroundColor(Color("MainColor"))
-                    }
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(Color("MainColor"))
+                        .imageScale(.large)
                 }
             }
             
-            // Add this new ToolbarItem
+            ToolbarItem(placement: .principal) {
+                Text(deck.name)
+                    .font(.title2.bold())
+                    .foregroundColor(Color("MainColor"))
+            }
+            
             ToolbarItem(placement: .navigationBarTrailing) {
                 NavigationLink(destination: flashcardView(deck: deck)) {
                     Image(systemName: "play.fill")
@@ -160,10 +235,9 @@ struct listOfFlashcardsView: View {
         let flashcard = Flashcard(question: newQuestion, answer: newAnswer, deck: deck)
         deck.flashcards.append(flashcard)
         
-        // Reset input fields
+        // Reset input fields but don't close the form
         newQuestion = ""
         newAnswer = ""
-        isAddingCard = false
     }
     
     private func deleteFlashcard(at offsets: IndexSet) {
@@ -195,6 +269,23 @@ struct listOfFlashcardsView: View {
         }
         
         print("Parsed Flashcards: \(qaPairs)") // Check parsed Q&A pairs
+    }
+    
+    // Add these new functions
+    private func updateFlashcard() {
+        if let card = editingCard {
+            card.question = editQuestion
+            card.answer = editAnswer
+            editingCard = nil
+            editQuestion = ""
+            editAnswer = ""
+        }
+    }
+    
+    private func cancelEdit() {
+        editingCard = nil
+        editQuestion = ""
+        editAnswer = ""
     }
 }
 #Preview {
