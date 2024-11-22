@@ -18,6 +18,8 @@ struct flashcardView: View {
     @State private var incorrectCards: [Flashcard] = []
     @State private var isStudyingIncorrect = false
     @State private var currentIncorrectCards: [Flashcard] = []
+    @State private var rotation: Double = 0 // Add this property
+    @Environment(\.dismiss) private var dismiss
     
     var currentCards: [Flashcard] {
         isStudyingIncorrect ? incorrectCards : deck.flashcards
@@ -28,134 +30,162 @@ struct flashcardView: View {
             Color("BackgroundColor")
                 .ignoresSafeArea()
             
-            if currentIndex < currentCards.count {
-                // Card View
-                VStack {
-                    Spacer()
-                    
-                    ZStack {
-                        // Back of card (Answer)
-                        CardFace(text: currentCards[currentIndex].answer, backgroundColor: backgroundColor)
-                            .rotation3DEffect(.degrees(degree), axis: (x: 0, y: 1, z: 0))
-                            .opacity(isFlipped ? 1 : 0)
-                            .scaleEffect(x: isFlipped ? -1 : 1, y: 1)
-                            .offset(offset)
+            VStack {
+                // Centered circular back button
+                Button(action: { dismiss() }) {
+                    Circle()
+                        .fill(Color("MainColor"))
+                        .frame(width: 40, height: 40)
+                        .overlay(
+                            Image(systemName: "xmark")
+                                .foregroundColor(Color("TextColor"))
+                                .font(.system(size: 16, weight: .bold))
+                        )
+                }
+                .padding(.top)
+                
+                Spacer()
+                
+                // Rest of your existing view content
+                if currentIndex < currentCards.count {
+                    // Card View
+                    VStack {
+                        Spacer()
                         
-                        // Front of card (Question)
-                        CardFace(text: currentCards[currentIndex].question, backgroundColor: backgroundColor)
-                            .rotation3DEffect(.degrees(degree - 180), axis: (x: 0, y: 1, z: 0))
-                            .opacity(isFlipped ? 0 : 1)
-                            .scaleEffect(x: isFlipped ? 1 : -1, y: 1)
-                            .offset(offset)
-                    }
-                    .frame(width: 320, height: 400)
-                    .gesture(
-                        DragGesture()
-                            .onChanged { gesture in
-                                offset = gesture.translation
-                                if gesture.translation.width > 0 {
-                                    let progress = gesture.translation.width / 300
-                                    let opacity = pow(progress, 2)
-                                    backgroundColor = Color("CorrectColor").opacity(min(1, opacity))
-                                } else if gesture.translation.width < 0 {
-                                    let progress = abs(gesture.translation.width) / 300
-                                    let opacity = pow(progress, 2)
-                                    backgroundColor = Color("IncorrectColor").opacity(min(1, opacity))
-                                } else {
-                                    backgroundColor = Color("BackgroundColor")
-                                }
-                            }
-                            .onEnded { gesture in
-                                withAnimation {
-                                    // Check if the card was dragged far enough to trigger the next card
-                                    if gesture.translation.width > 100 {
-                                        backgroundColor = Color("CorrectColor")
-                                        // Animate off-screen to the right
-                                        offset = CGSize(width: 500, height: 0)
-                                        nextCard()
-                                    } else if gesture.translation.width < -100 {
-                                        backgroundColor = Color("IncorrectColor")
-                                        // Animate off-screen to the left
-                                        offset = CGSize(width: -500, height: 0)
-                                        nextCard()
+                        ZStack {
+                            // Back of card (Answer)
+                            CardFace(text: currentCards[currentIndex].answer, backgroundColor: backgroundColor)
+                                .rotation3DEffect(.degrees(degree), axis: (x: 0, y: 1, z: 0))
+                                .opacity(isFlipped ? 1 : 0)
+                                .scaleEffect(x: isFlipped ? -1 : 1, y: 1)
+                                .offset(offset)
+                                .rotationEffect(.degrees(rotation)) // Add rotation effect
+                            
+                            // Front of card (Question)
+                            CardFace(text: currentCards[currentIndex].question, backgroundColor: backgroundColor)
+                                .rotation3DEffect(.degrees(degree - 180), axis: (x: 0, y: 1, z: 0))
+                                .opacity(isFlipped ? 0 : 1)
+                                .scaleEffect(x: isFlipped ? 1 : -1, y: 1)
+                                .offset(offset)
+                                .rotationEffect(.degrees(rotation)) // Add rotation effect
+                        }
+                        .frame(width: 320, height: 400)
+                        .gesture(
+                            DragGesture()
+                                .onChanged { gesture in
+                                    offset = gesture.translation
+                                    rotation = Double(gesture.translation.width / 20)
+                                    
+                                    if gesture.translation.width > 0 {
+                                        // Calculate progress for correct answer
+                                        let progress = min(abs(gesture.translation.width) / 150, 1.0)
+                                        backgroundColor = Color("CorrectColor").opacity(progress)
+                                    } else if gesture.translation.width < 0 {
+                                        // Calculate progress for incorrect answer
+                                        let progress = min(abs(gesture.translation.width) / 150, 1.0)
+                                        backgroundColor = Color("IncorrectColor").opacity(progress)
                                     } else {
-                                        // Reset offset to center if not swiped far enough
-                                        offset = .zero
+                                        backgroundColor = Color("BackgroundColor")
                                     }
                                 }
+                                .onEnded { gesture in
+                                    // Calculate final progress
+                                    let progress = min(abs(gesture.translation.width) / 150, 1.0)
+                                    
+                                    withAnimation(.easeOut(duration: 0.2)) {
+                                        // Only trigger card removal if color is at full saturation (progress == 1.0)
+                                        if gesture.translation.width > 0 && progress >= 1.0 {
+                                            offset = CGSize(width: 500, height: 0)
+                                            rotation = 20
+                                            backgroundColor = Color("CorrectColor")
+                                            nextCard()
+                                        } else if gesture.translation.width < 0 && progress >= 1.0 {
+                                            offset = CGSize(width: -500, height: 0)
+                                            rotation = -20
+                                            backgroundColor = Color("IncorrectColor")
+                                            nextCard()
+                                        } else {
+                                            // Return to center if not at full saturation
+                                            offset = .zero
+                                            rotation = 0
+                                            backgroundColor = Color("BackgroundColor")
+                                        }
+                                    }
+                                }
+                        )
+                        .onTapGesture {
+                            withAnimation(.easeInOut(duration: 0.5)) {
+                                degree += 180
+                                isFlipped.toggle()
                             }
-                    )
-                    .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.5)) {
-                            degree += 180
-                            isFlipped.toggle()
                         }
-                    }
-                    
-                    Spacer()
-                    
-                    // Progress indicator
-                    Text("\(currentIndex + 1) of \(currentCards.count)")
-                        .foregroundColor(Color("TextColor"))
-                        .padding(.bottom)
-                }
-            } else {
-                // Modified deck completed view
-                VStack {
-                    Text("Deck Completed!")
-                        .font(.title)
-                        .foregroundColor(Color("TextColor"))
-                    
-                    if !isStudyingIncorrect && !incorrectCards.isEmpty {
-                        Text("You got \(incorrectCards.count) cards incorrect")
-                            .foregroundColor(Color("TextColor"))
-                            .padding(.vertical)
                         
-                        Button("Study Incorrect Cards") {
-                            isStudyingIncorrect = true
-                            currentIndex = 0
-                            isFlipped = false
-                            degree = 0
-                            currentIncorrectCards = []
-                        }
-                        .foregroundColor(Color("MainColor"))
-                        .padding()
-                    } else if isStudyingIncorrect {
-                        if currentIncorrectCards.isEmpty {
-                            Text("Great job! You got all cards correct this time!")
+                        Spacer()
+                        
+                        // Progress indicator
+                        Text("\(currentIndex + 1) of \(currentCards.count)")
+                            .foregroundColor(Color("TextColor"))
+                            .padding(.bottom)
+                    }
+                } else {
+                    // Modified deck completed view
+                    VStack(spacing: 20) {
+                        Spacer() // Push down from top button
+                        
+                        Text("Deck Completed!")
+                            .font(.title)
+                            .foregroundColor(Color("TextColor"))
+                        
+                        if !isStudyingIncorrect && !incorrectCards.isEmpty {
+                            Text("You got \(incorrectCards.count) cards incorrect")
                                 .foregroundColor(Color("TextColor"))
-                                .padding(.vertical)
-                        } else {
-                            Text("You still got \(currentIncorrectCards.count) cards incorrect")
-                                .foregroundColor(Color("TextColor"))
-                                .padding(.vertical)
                             
-                            Button("Study Incorrect Cards Again") {
-                                incorrectCards = currentIncorrectCards
+                            Button("Study Incorrect Cards") {
+                                isStudyingIncorrect = true
                                 currentIndex = 0
                                 isFlipped = false
                                 degree = 0
                                 currentIncorrectCards = []
                             }
                             .foregroundColor(Color("MainColor"))
-                            .padding()
+                        } else if isStudyingIncorrect {
+                            if currentIncorrectCards.isEmpty {
+                                Text("Great job! You got all cards correct this time!")
+                                    .foregroundColor(Color("TextColor"))
+                            } else {
+                                Text("You still got \(currentIncorrectCards.count) cards incorrect")
+                                    .foregroundColor(Color("TextColor"))
+                                
+                                Button("Study Incorrect Cards Again") {
+                                    incorrectCards = currentIncorrectCards
+                                    currentIndex = 0
+                                    isFlipped = false
+                                    degree = 0
+                                    currentIncorrectCards = []
+                                }
+                                .foregroundColor(Color("MainColor"))
+                            }
                         }
+                        
+                        Button("Start Over") {
+                            currentIndex = 0
+                            isFlipped = false
+                            degree = 0
+                            incorrectCards = []
+                            currentIncorrectCards = []
+                            isStudyingIncorrect = false
+                        }
+                        .foregroundColor(Color("MainColor"))
+                        
+                        Spacer() // Push up from bottom
                     }
-                    
-                    Button("Start Over") {
-                        currentIndex = 0
-                        isFlipped = false
-                        degree = 0
-                        incorrectCards = []
-                        currentIncorrectCards = []
-                        isStudyingIncorrect = false
-                    }
-                    .foregroundColor(Color("MainColor"))
                     .padding()
                 }
             }
         }
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .navigationBarHidden(true) // Hide the navigation bar completely
     }
     
     private func nextCard() {
@@ -169,9 +199,11 @@ struct flashcardView: View {
             }
             
             currentIndex += 1
-            offset = .zero // Reset offset when moving to the next card
+            // Reset all card states
+            offset = .zero
             isFlipped = false
             degree = 0
+            rotation = 0  // Reset rotation
             backgroundColor = Color("BackgroundColor")
         }
     }

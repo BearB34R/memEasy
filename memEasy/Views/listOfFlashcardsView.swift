@@ -134,6 +134,14 @@ struct listOfFlashcardsView: View {
                     }
                 }
             }
+            
+            // Add this new ToolbarItem
+            ToolbarItem(placement: .navigationBarTrailing) {
+                NavigationLink(destination: flashcardView(deck: deck)) {
+                    Image(systemName: "play.fill")
+                        .foregroundColor(Color("MainColor"))
+                }
+            }
         }
         .fileImporter(
             isPresented: $showingFilePicker,
