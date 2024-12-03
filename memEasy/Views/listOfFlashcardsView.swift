@@ -257,6 +257,7 @@ struct listOfFlashcardsView: View {
         print("PDF Text Loaded: \(pdfText)") // Check the loaded text
         
         let qaPairs = parseQuestionsAndAnswers(text: pdfText)
+        print("Number of parsed Q&A pairs: \(qaPairs.count)")
         
         // Create flashcards from the parsed Q&A pairs
         for pair in qaPairs {
@@ -266,9 +267,13 @@ struct listOfFlashcardsView: View {
                 deck: deck
             )
             deck.flashcards.append(flashcard)
+            context.insert(flashcard) // Add this line to explicitly insert into context
+            print("Created flashcard: Q: \(pair.question), A: \(pair.answer)")
         }
         
-        print("Parsed Flashcards: \(qaPairs)") // Check parsed Q&A pairs
+        // Force a save to the context
+        try? context.save()
+        print("Final flashcard count: \(deck.flashcards.count)")
     }
     
     // Add these new functions
