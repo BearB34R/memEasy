@@ -1,6 +1,17 @@
 # MemEasy - Flashcard Study App
 
+[![Swift](https://img.shields.io/badge/Swift-6.0-orange.svg)](https://swift.org)
+[![Platform](https://img.shields.io/badge/Platform-iOS-blue.svg)](https://developer.apple.com/ios/)
+[![SwiftUI](https://img.shields.io/badge/SwiftUI-4.0-purple.svg)](https://developer.apple.com/xcode/swiftui/)
+
+
 A modern iOS flashcard application built with SwiftUI for creating and studying flashcard decks with PDF import capabilities.
+
+## Getting Started
+1. Clone the repository
+2. Open `memEasy.xcodeproj` in Xcode
+3. Build and run on iOS 17.0+ device/simulator
+
 
 ## Core Technologies
 
