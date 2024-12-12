@@ -147,7 +147,6 @@ struct LogoCard: View {
     }
 }
 
-// Preview provider
 #Preview {
     ContentView()
 }
