@@ -8,30 +8,34 @@
 import SwiftUI
 import SwiftData
 
+// View for managing flashcards within a deck
 struct listOfFlashcardsView: View {
+    // Environment and data model connections
     @Environment(\.modelContext) private var context
     let deck: Deck
     
+    // State for adding new cards
     @State private var newQuestion: String = ""
     @State private var newAnswer: String = ""
     @State private var isAddingCard: Bool = false
     @State private var showingFilePicker = false
     @Environment(\.dismiss) private var dismiss
     
-    // Add these new state variables
+    // State for editing existing cards
     @State private var editingCard: Flashcard?
     @State private var editQuestion: String = ""
     @State private var editAnswer: String = ""
     
     var body: some View {
+        // Main container
         ZStack {
-            // Add background color
+            // Background
             Color("BackgroundColor")
                 .ignoresSafeArea()
             
-            VStack(spacing: 0) {
-                // Fixed buttons section
-                HStack(spacing: 10) {
+            VStack {
+                // Top action buttons
+                HStack {
                     // PDF Import button
                     Label("Import PDF", systemImage: "doc.fill")
                         .frame(maxWidth: .infinity)
@@ -43,7 +47,7 @@ struct listOfFlashcardsView: View {
                             showingFilePicker = true
                         }
                     
-                    // Add New Flashcard button
+                    // Add Card button
                     Label("Add Card", systemImage: "plus.circle")
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 8)
@@ -58,9 +62,10 @@ struct listOfFlashcardsView: View {
                 
                 // Scrollable content
                 List {
+                    // Add new card form
                     if isAddingCard {
                         VStack(spacing: 10) {
-                            // Question TextEditor
+                            // Question input
                             Text("Question:")
                                 .foregroundColor(Color("TextColor"))
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -75,7 +80,7 @@ struct listOfFlashcardsView: View {
                                         .stroke(Color("MainColor"), lineWidth: 1)
                                 )
                             
-                            // Answer TextEditor
+                            // Answer input
                             Text("Answer:")
                                 .foregroundColor(Color("TextColor"))
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -90,6 +95,7 @@ struct listOfFlashcardsView: View {
                                         .stroke(Color("MainColor"), lineWidth: 1)
                                 )
                             
+                            // Save button
                             Button(action: addFlashcard) {
                                 Text("Save Flashcard")
                                     .frame(maxWidth: .infinity)
@@ -101,19 +107,20 @@ struct listOfFlashcardsView: View {
                             .disabled(newQuestion.isEmpty || newAnswer.isEmpty)
                         }
                         .padding(.vertical, 8)
-                        .listRowBackground(Color.clear) // Add this line
+                        .listRowBackground(Color.clear)
                     }
                     
-                    // List of existing flashcards
-                    Section(header: 
-                        Text("Flashcards")
-                            .foregroundColor(Color("TextColor"))
+                    // Existing cards list
+                    Section(header: Text("Flashcards")
+                        .foregroundColor(Color("TextColor"))
                     ) {
                         ForEach(deck.flashcards) { card in
+                            // Card view/edit form
                             VStack(alignment: .leading, spacing: 8) {
                                 if editingCard?.id == card.id {
                                     // Edit form
                                     VStack(spacing: 10) {
+                                        // Question input
                                         Text("Question:")
                                             .foregroundColor(Color("TextColor"))
                                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -128,6 +135,7 @@ struct listOfFlashcardsView: View {
                                                     .stroke(Color("MainColor"), lineWidth: 1)
                                             )
                                         
+                                        // Answer input
                                         Text("Answer:")
                                             .foregroundColor(Color("TextColor"))
                                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -142,6 +150,7 @@ struct listOfFlashcardsView: View {
                                                     .stroke(Color("MainColor"), lineWidth: 1)
                                             )
                                         
+                                        // Save/Cancel buttons
                                         HStack {
                                             Button(action: updateFlashcard) {
                                                 Text("Save")
@@ -168,8 +177,9 @@ struct listOfFlashcardsView: View {
                                         }
                                     }
                                 } else {
-                                    // Regular card view
+                                    // Regular card display
                                     VStack(alignment: .leading, spacing: 8) {
+                                        // Question and answer text
                                         Text("Q: \(card.question)")
                                             .font(.headline)
                                             .foregroundColor(Color("TextColor"))
@@ -177,7 +187,7 @@ struct listOfFlashcardsView: View {
                                             .font(.subheadline)
                                             .foregroundColor(Color("CorrectColor"))
                                     }
-                                    .contentShape(Rectangle()) // Make entire area tappable
+                                    .contentShape(Rectangle())
                                     .onTapGesture {
                                         editingCard = card
                                         editQuestion = card.question
@@ -187,16 +197,19 @@ struct listOfFlashcardsView: View {
                             }
                             .padding(.vertical, 4)
                         }
+                        // Enable deletion
                         .onDelete(perform: deleteFlashcard)
                     }
                     .listRowBackground(Color.clear)
                 }
-                .scrollContentBackground(.hidden) // This hides the default List background
+                .scrollContentBackground(.hidden)
             }
         }
-        .navigationBarTitleDisplayMode(.inline) // Changes to inline to remove large title
+        // Navigation configuration
+        .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .toolbar {
+            // Back button
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: { dismiss() }) {
                     Image(systemName: "chevron.left")
@@ -205,12 +218,14 @@ struct listOfFlashcardsView: View {
                 }
             }
             
+            // Deck title
             ToolbarItem(placement: .principal) {
                 Text(deck.name)
                     .font(.title2.bold())
                     .foregroundColor(Color("MainColor"))
             }
             
+            // Study button
             ToolbarItem(placement: .navigationBarTrailing) {
                 NavigationLink(destination: flashcardView(deck: deck)) {
                     Image(systemName: "play.fill")
@@ -218,6 +233,7 @@ struct listOfFlashcardsView: View {
                 }
             }
         }
+        // PDF file picker
         .fileImporter(
             isPresented: $showingFilePicker,
             allowedContentTypes: [.pdf]
@@ -231,16 +247,20 @@ struct listOfFlashcardsView: View {
         }
     }
     
+    // Add new flashcard
     private func addFlashcard() {
+        // Create and save new card
         let flashcard = Flashcard(question: newQuestion, answer: newAnswer, deck: deck)
         deck.flashcards.append(flashcard)
         
-        // Reset input fields but don't close the form
+        // Reset input fields
         newQuestion = ""
         newAnswer = ""
     }
     
+    // Delete flashcard
     private func deleteFlashcard(at offsets: IndexSet) {
+        // Remove card from deck and context
         for index in offsets {
             let flashcard = deck.flashcards[index]
             context.delete(flashcard)
@@ -248,18 +268,20 @@ struct listOfFlashcardsView: View {
         }
     }
     
+    // Import PDF
     private func importPDF(from url: URL) {
+        // Load and parse PDF
         guard let pdfText = loadPDFText(url: url) else {
             print("Failed to load PDF text")
             return
         }
         
-        print("PDF Text Loaded: \(pdfText)") // Check the loaded text
+        print("PDF Text Loaded: \(pdfText)")
         
         let qaPairs = parseQuestionsAndAnswers(text: pdfText)
         print("Number of parsed Q&A pairs: \(qaPairs.count)")
         
-        // Create flashcards from the parsed Q&A pairs
+        // Create flashcards from content
         for pair in qaPairs {
             let flashcard = Flashcard(
                 question: pair.question,
@@ -267,17 +289,18 @@ struct listOfFlashcardsView: View {
                 deck: deck
             )
             deck.flashcards.append(flashcard)
-            context.insert(flashcard) // Add this line to explicitly insert into context
+            context.insert(flashcard)
             print("Created flashcard: Q: \(pair.question), A: \(pair.answer)")
         }
         
-        // Force a save to the context
+        // Save to context
         try? context.save()
         print("Final flashcard count: \(deck.flashcards.count)")
     }
     
-    // Add these new functions
+    // Update existing flashcard
     private func updateFlashcard() {
+        // Save changes to edited card
         if let card = editingCard {
             card.question = editQuestion
             card.answer = editAnswer
@@ -287,19 +310,23 @@ struct listOfFlashcardsView: View {
         }
     }
     
+    // Cancel card editing
     private func cancelEdit() {
+        // Reset edit state
         editingCard = nil
         editQuestion = ""
         editAnswer = ""
     }
 }
+
 #Preview {
-    // Create a sample deck for preview
+    // Create test container and sample deck
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
     let container = try! ModelContainer(for: Deck.self, configurations: config)
     
     let sampleDeck = Deck(name: "Sample Deck")
     
+    // Return preview view
     return listOfFlashcardsView(deck: sampleDeck)
         .modelContainer(container)
 }
