@@ -8,20 +8,26 @@
 import SwiftUI
 import SwiftData
 
+// View for studying flashcard decks
 struct studyFlashcardsView: View {
+    // Environment properties
     @Environment(\.dismiss) private var dismiss
     @Query(sort: \Deck.dateCreated, order: .reverse) var decks: [Deck]
     
+    // UI state properties 
     @State private var searchText: String = ""
     @State private var showTopElements = true
     @State private var sortByAlphabet = false
     @FocusState private var isSearchFocused: Bool
     
+    // Filtered and sorted deck list
     var sortedAndFilteredDecks: [Deck] {
+        // Filter by search text
         let filtered = searchText.isEmpty ? decks : decks.filter { 
             $0.name.localizedCaseInsensitiveContains(searchText)
         }
         
+        // Optional alphabetical sort
         if sortByAlphabet {
             return filtered.sorted { $0.name.lowercased() < $1.name.lowercased() }
         }
@@ -29,30 +35,33 @@ struct studyFlashcardsView: View {
     }
     
     var body: some View {
+        // Main container
         ZStack {
-            // Add tap gesture only to background
+            // Background with tap gesture
             Color("BackgroundColor")
                 .ignoresSafeArea()
                 .onTapGesture {
                     isSearchFocused = false
                 }
             
+            // Content layout
             VStack(spacing: 0) {
-                // Search bar
+                // Search bar (conditional)
                 if showTopElements {
                     HStack {
+                        // Search field container
                         HStack {
+                            // Search icon and text field
                             Image(systemName: "magnifyingglass")
-                                .foregroundColor(Color("TextColor"))
-                            
                             TextField("Search Decks", text: $searchText)
-                                .foregroundColor(Color("TextColor"))
-                                .tint(Color("TextColor"))
-                                .textFieldStyle(PlainTextFieldStyle())
-                                .focused($isSearchFocused)
-                                .submitLabel(.done)
-                                .foregroundStyle(Color("TextColor"))
                         }
+                        // Search styling
+                        .foregroundColor(Color("TextColor"))
+                        .tint(Color("TextColor"))
+                        .textFieldStyle(PlainTextFieldStyle())
+                        .focused($isSearchFocused)
+                        .submitLabel(.done)
+                        .foregroundStyle(Color("TextColor"))
                         .padding(8)
                         .background(Color("BackgroundColor"))
                         .cornerRadius(8)
@@ -61,6 +70,7 @@ struct studyFlashcardsView: View {
                                 .stroke(Color("MainColor"), lineWidth: 1)
                         )
                         
+                        // Clear button (conditional)
                         if !searchText.isEmpty {
                             Button(action: {
                                 searchText = ""
@@ -74,12 +84,14 @@ struct studyFlashcardsView: View {
                     .padding()
                 }
                 
-                // List of decks
+                // Deck list
                 List {
                     ForEach(sortedAndFilteredDecks) { deck in
+                        // Navigation to flashcard view
                         NavigationLink {
                             flashcardView(deck: deck)
                         } label: {
+                            // Deck row content
                             VStack(alignment: .leading) {
                                 Text(deck.name)
                                     .font(.headline)
@@ -97,9 +109,11 @@ struct studyFlashcardsView: View {
                 .scrollContentBackground(.hidden)
             }
         }
+        // Navigation configuration
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .toolbar {
+            // Back button
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: { dismiss() }) {
                     Image(systemName: "chevron.left")
@@ -108,12 +122,14 @@ struct studyFlashcardsView: View {
                 }
             }
             
+            // Title
             ToolbarItem(placement: .principal) {
                 Text("Study")
                     .font(.title2.bold())
                     .foregroundColor(Color("MainColor"))
             }
             
+            // Sort toggle
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
                     withAnimation {
@@ -128,17 +144,16 @@ struct studyFlashcardsView: View {
     }
 }
 
+// Preview with sample data
 #Preview {
-    // Create a test configuration
+    // Test configuration setup
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
     let container = try! ModelContainer(for: Deck.self, configurations: config)
     
-    // Create sample decks with flashcards
+    // Create sample decks
     let deck1 = Deck(name: "Spanish Vocabulary")
     deck1.flashcards = [
         Flashcard(question: "Hello", answer: "Hola"),
-        Flashcard(question: "Goodbye", answer: "Adiós"),
-        Flashcard(question: "Thank you", answer: "Gracias")
     ]
     
     let deck2 = Deck(name: "Math Formulas")
@@ -149,11 +164,12 @@ struct studyFlashcardsView: View {
     
     let deck3 = Deck(name: "Empty Deck", flashcards: [])
     
-    // Insert decks into container
+    // Add decks to container
     container.mainContext.insert(deck1)
     container.mainContext.insert(deck2)
     container.mainContext.insert(deck3)
     
+    // Return preview view
     return NavigationStack {
         studyFlashcardsView()
     }
