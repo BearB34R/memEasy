@@ -5,24 +5,20 @@
 [![SwiftUI](https://img.shields.io/badge/SwiftUI-4.0-purple.svg)](https://developer.apple.com/xcode/swiftui/)
 
 
-A modern iOS flashcard application built with SwiftUI for creating and studying flashcard decks with PDF import capabilities.
+## Developers
 
-## Getting Started
-1. Clone the repository
-2. Open `memEasy.xcodeproj` in Xcode
-3. Build and run on iOS 17.0+ device/simulator
+- Andy Nguyen
+- Quan Khong
 
+## Goals of this Project
+Create a modern iOS flashcard application built with SwiftUI for creating and studying flashcard decks with PDF import capabilities.
 
-## Core Technologies
+- Learning how to intergrate code and build projects with SwiftUI, SwiftData, and PDFKit
+  - Building from scratch a database that can handle/rememeber user data
+  - Creating easy to understand UI elements that can be easily interpreted by new users
+  - Allow pdf document parsing for fast and efficient creation of flashcards
 
-- **SwiftUI**: Used for building the entire user interface with native iOS components and animations
-- **SwiftData**: Handles persistent storage and data management for:
-  - Deck and Flashcard models
-  - CRUD operations
-  - Relationship management between decks and cards
-- **PDFKit**: Enables PDF document parsing to automatically generate flashcards from properly formatted PDFs
-
-## Features
+## Features/Functionalities
 
 - Create and manage multiple flashcard decks
 - Add cards manually with question/answer pairs
@@ -33,10 +29,20 @@ A modern iOS flashcard application built with SwiftUI for creating and studying 
   - Progress tracking
   - Review incorrect cards
 - Search and sort functionality for decks
-- Dark/Light mode support
 
-## PDF Import Format
-PDFs must follow this format for successful parsing:
+## Architecture and Design
+
+**Frontend**: 
+- **SwiftUI**: Used for building the entire user interface with native iOS components and animations
+
+**Backend**:
+- **SwiftData**: Handles persistent storage and data management for:
+  - Deck and Flashcard models
+  - Relationship management between decks and cards
+- **PDFKit**: Enables PDF document parsing to automatically generate flashcards from properly formatted PDFs
+
+### PDF Import Format:
+- PDFs must follow this format for successful parsing:
 ```text
 Q: Question here
 A: Answer here
@@ -58,6 +64,14 @@ A: Answer here
     var deck: Deck?
 }
 ```
+
+## How to get it running:
+1. Clone the repository
+```
+git clone https://github.com/BearB34R/memEasy.git
+```
+3. Open `memEasy.xcodeproj` in Xcode
+4. Build and run on iOS 17.0+ device/simulator
 
 ## Requirements
 - IOS 17.0+
